@@ -1,0 +1,13 @@
+By analyzing the average energy, valence and danceability of the listener's top 100 songs.
+You could characterize the audio aura in terms of general mood, intensity, positivity and daceability of the music they listen to.
+
+Energy: Higher energy value suggest a more lively and energetic audio aura
+Valence: Higher valence indicates a more positive and uplifting aura
+Danceability: Higher danceability indicates a more Rhythmic and energetic aura
+
+Might not be as repesentative because the Selection could be limited for some people
+and everyone has different interpretations of the lyrics or feels different emotions while listening to them
+according to their preferences and experiences which is highly subjective.
+
+To overcome the limitations you could use a higher sample size, more attributes like the tempo of the songs or certain intruments used.
+You could also let users set custom tags which could help with accuracy in analyzing the audio aura.
