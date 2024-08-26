@@ -1,0 +1,13 @@
+sort1 uses: Bubble Sort
+
+How do you know?: performs slower in the worst case than selection Sort (sort3), and fastest in the best case Omega(n)
+
+sort2 uses: Merge Sort
+
+How do you know?: overall pretty fast in each case, with similar performance compared to the other sorts but is slower than Bubble sort(case1) in the best case.
+
+sort3 uses: Selection Sort
+
+How do you know?: faster in the best case than bubble sort (sort1), but slower in the worst case with similar performance in each case.
+
+
