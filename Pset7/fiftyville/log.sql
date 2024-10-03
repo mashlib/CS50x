@@ -1,21 +1,21 @@
 -- Keep a log of any SQL queries you execute as you solve the mystery.
 
-
 -- Becaue i know the specific date and street where the theft happened i'm looking for additional information in the crime_scene_reports table
 SELECT street, year, month, day, description FROM crime_scene_reports
 WHERE street = 'Humphrey Street'
 AND year = 2023
 AND month = 7
 AND day = 28;
+-- Theft of the CS50 duck took place at 10:15am at the Humphrey Street bakery. Interviews were conducted today with three witnesses who were present at the time – each of their interview transcripts mentions the bakery.
 
 -- Checking the interviews for the date mentioned looking for any mentions of bakery
 SELECT * FROM interviews
 WHERE transcript LIKE '%bakery%';
--- 1. The Thief left within 10 minutes 10:15 - 10:25
+-- 1. The Thief left within 10 minutes 10:15 - 10:25 and entered a vehicle in the parking lot
 -- 2. The thief got recognized withdrawing money from the atm at Legget Street earlier that morning
 -- 3. The thief made a phone call to his accomplice that lasted for less than 60 seconds and told his accomplice to book the earliest flight out on the 29th
 
--- Since the theft took place at 10:15 am and some interview mentioned the thief entering a car sometime within 10minutes
+-- Since the theft took place at 10:15 am and some interview mentioned the thief entering a car sometime within 10 minutes
 -- I'm checking for license plate's
 SELECT license_plate FROM bakery_security_logs
 WHERE day = 28
@@ -38,6 +38,7 @@ AND minute < 25;
 +---------------+
 */
 -- Checking the license plate owners of the possible getaway vehicle
+-- That left within 10 minutes that day
 SELECT name FROM people
 WHERE license_plate IN
 (
@@ -65,7 +66,7 @@ WHERE license_plate IN
  */
 
 -- Someone mentioned seeing the thief earlier that day withdrawing money on Legget Street
--- Checking for everone withdrawing money at day
+-- Checking for everone withdrawing money that day on Leggett Street
  SELECT * FROM atm_transactions
  WHERE day = 28
  AND atm_location = 'Leggett Street';
@@ -167,4 +168,69 @@ WHERE id =
     WHERE id = 36
 );
 
+-- Checking for passengers on flight with the id 36
+SELECT city FROM airports
+WHERE id =
+(
+    SELECT destination_airport_id
+    FROM flights
+    WHERE id = 36
+);
+/*
++--------+
+|  name  |
++--------+
+| Kenny  |
+| Sofia  |
+| Taylor |
+| Luca   |
+| Kelsey |
+| Edward |
+| Bruce  |
+| Doris  |
++--------+
+*/
 
+-- Putting it all together to find a common name between all the links
+SELECT name FROM people
+JOIN passengers ON people.passport_number = passengers.passport_number
+AND passengers.flight_id = 36
+JOIN phone_calls ON phone_calls.caller = people.phone_number
+AND duration < 60
+AND phone_calls.day = 28
+JOIN bakery_security_logs ON bakery_security_logs.license_plate = people.license_plate
+AND bakery_security_logs.day = 28
+AND activity = 'exit'
+AND hour = 10
+AND minute > 15
+AND minute < 25
+JOIN bank_accounts ON bank_accounts.person_id = people.id
+JOIN atm_transactions ON atm_transactions.account_number = bank_accounts.account_number
+AND atm_location = 'Leggett Street'
+AND transaction_type = 'withdraw'
+AND atm_transactions.day = 28;
+/*
++-------+
+| name  |
++-------+
+| Bruce |
++-------+
+*/
+
+-- Now to find the accomplice i'll check who Bruce called that day
+SELECT name FROM people
+JOIN phone_calls ON phone_calls.receiver = people.phone_number
+AND duration < 60
+AND phone_calls.day = 28
+WHERE phone_calls.caller =
+(
+    SELECT phone_number FROM people
+    WHERE name = 'Bruce'
+);
+/*
++-------+
+| name  |
++-------+
+| Robin |
++-------+
+*/
